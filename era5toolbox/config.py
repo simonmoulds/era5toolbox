@@ -43,6 +43,16 @@ class Config(object):
 
         self.start_year = config.get('TIME', 'start')
         self.end_year = config.get('TIME', 'end')
+        self.years = [
+            str(num) for num in range(
+                int(self.start_year),
+                int(self.end_year) + 1
+            )
+        ]
+        self.months = [
+            str(num).zfill(2) for num in range(1, 13)
+        ]
+        
         self.download = bool(int(config.get('TASKS', 'download')))
         self.regrid = bool(int(config.get('TASKS', 'regrid')))
         self.summarise = bool(int(config.get('TASKS', 'aggregate')))

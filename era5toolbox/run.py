@@ -7,6 +7,7 @@ from configparser import ConfigParser, ExtendedInterpolation
 from .config import Config
 from .download import DownloadERA5
 from .regrid import RegridERA5
+from .specifichumidity import SpecificHumidityERA5
 from .summarise import SummariseERA5
 
 def main():

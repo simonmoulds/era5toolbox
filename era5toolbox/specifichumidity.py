@@ -3,17 +3,17 @@
 import os
 import tempfile
 import subprocess
-import xarray
-import metpy
-from constants import VARNAMES
+import numpy as np
+import xarray as xr
+import metpy.calc as mpcalc
 
 class SpecificHumidityERA5(object):
     def __init__(self, config):
         self.config = config
 
     def compute_specific_humidity(self):
-        for year in years:
-            for month in months:
+        for year in self.config.years:
+            for month in self.config.months:
                 
                 # construct filenames of dewpoint temperature and surface pressure
                 d2mfn = os.path.join(
@@ -38,13 +38,13 @@ class SpecificHumidityERA5(object):
                 )
 
                 # perform calculation using MetPy (this should take care of units automatically)
-                d2m = xarray.open_dataset(d2mfn)
-                sp = xarray.open_dataset(spfn)
-                q = metpy.calc.specific_humidity_from_dewpoint(
+                d2m = xr.open_dataset(d2mfn)
+                sp = xr.open_dataset(spfn)
+                q = mpcalc.specific_humidity_from_dewpoint(
                     d2m.d2m,
                     sp.sp
                 )
-                qxr = xarray.DataArray(
+                qxr = xr.DataArray(
                     np.array(q),
                     dims=d2m.d2m.dims,
                     coords=d2m.d2m.coords,

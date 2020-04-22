@@ -3,7 +3,7 @@
 import os
 import tempfile
 import subprocess
-from constants import VARNAMES
+from .constants import VARNAMES
 
 class RegridERA5(object):
     def __init__(self, config):
@@ -37,22 +37,11 @@ class RegridERA5(object):
         
     def regrid(self):
         self.write_cdo_gridfile()        
-        years = [
-            str(num) for num in range(
-                int(self.config.start_year),
-                int(self.config.end_year) + 1
-            )
-        ]
-        months = [
-            str(num).zfill(2) for num in range(1, 13)
-        ]
-        
         # attempt to create output directory
         if not os.path.isdir(self.config.regrid_directory):
-            os.mkdir(self.config.regrid_directory)
-            
-        for year in years:
-            for month in months:
+            os.mkdir(self.config.regrid_directory)            
+        for year in self.config.years:
+            for month in self.config.months:
                 # filename of netCDF containing all variables
                 fn = os.path.join(
                     self.config.download_directory,
@@ -70,30 +59,23 @@ class RegridERA5(object):
                         + self.config.region_name + '_' \
                         + year + month + '.nc'
                     )
-                    # select_cmd = 'cdo select,name=' + VARNAMES[variable] \
-                    #     + ' ' + fn + ' ' + tmpfn.name
-                    # regrid_cmd = 'cdo remapbil,' + self.gridfile \
-                    #     + ' ' + tmpfn.name + ' ' + newfn
-                    # os.system(select_cmd)
-                    # os.system(regrid_cmd)
-                    # print(select_cmd)
-                    # print(regrid_cmd)
-                    try:
-                        subprocess.run([
-                            'cdo',
-                            'select,name=' + VARNAMES[variable],
-                            fn,
-                            tmpfn.name
-                        ])
-                    except KeyboardInterrupt:
-                        break
-
-                    try:
-                        subprocess.run([
-                            'cdo',
-                            'remapbil,' + self.gridfile,
-                            tmpfn.name,
-                            newfn
-                        ])
-                    except KeyboardInterrupt:
-                        break
+                    
+                    if not os.path.isfile(newfn):
+                        try:
+                            subprocess.run([
+                                'cdo',
+                                'select,name=' + VARNAMES[variable],
+                                fn,
+                                tmpfn.name
+                            ])
+                        except KeyboardInterrupt:
+                            break
+                        try:
+                            subprocess.run([
+                                'cdo',
+                                'remapbil,' + self.gridfile,
+                                tmpfn.name,
+                                newfn
+                            ])
+                        except KeyboardInterrupt:
+                            break

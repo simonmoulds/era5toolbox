@@ -31,17 +31,10 @@ class DownloadERA5(object):
         self.config = config
 
     def download(self):
-        years = [
-            str(num) for num in range(
-                int(self.config.start_year),
-                int(self.config.end_year) + 1
-            )
-        ]
-        months = [
-            str(num).zfill(2) for num in range(1, 13)
-        ]
-        for year in years:
-            for month in months:
+        if not os.path.isdir(self.config.download_directory):
+            os.mkdir(self.config.download_directory)            
+        for year in self.config.years:
+            for month in self.config.months:
                 fn = os.path.join(
                     self.config.download_directory,
                     'era5_reanalysis_' \

@@ -17,7 +17,6 @@ cryptography=2.8=py37hb09aad4_2
 curl=7.69.1=hbc83047_0
 cycler=0.10.0=py_2
 decorator=4.4.2=py_0
-era5toolbox=0.1=dev_0
 freetype=2.10.1=he06d7ca_0
 geos=3.8.1=he1b5a44_0
 hdf4=4.2.13=h3ca952b_2
