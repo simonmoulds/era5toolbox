@@ -18,7 +18,9 @@
 # ========================================================= #
 
 import os
+import sys
 import cdsapi
+from .config import Config
 
 c = cdsapi.Client()
 
@@ -61,7 +63,15 @@ class DownloadERA5(object):
                         )
                     except:
                         pass
-        
+
+def main():
+    config = Config(os.path.abspath(sys.argv[1]))
+    downloader = DownloadERA5(config)
+    downloader.download()
+
+if __name__ == '__main__':
+    main()
+
 # def main():
 #     for year in YEARS:
 #         for month in MONTHS:

@@ -1,9 +1,12 @@
 #!/usr/bin/env python
 
 import os
+import sys
 import tempfile
 import subprocess
+from .config import Config
 from .constants import VARNAMES
+
 
 class RegridERA5(object):
     def __init__(self, config):
@@ -22,7 +25,7 @@ class RegridERA5(object):
         yinc = -self.config.resolution
         self.gridfile = os.path.join(
             '/tmp',
-            'grid_' + self.config.region_name + '_' \
+            'grid_' + self.config.region_name + '_'
             + '{:.6f}'.format(self.config.resolution) + 'Deg.txt'
         )
         f = open(self.gridfile, 'w')
@@ -34,39 +37,39 @@ class RegridERA5(object):
         f.write('yfirst=' + str(yfirst) + '\n')
         f.write('yinc=' + str(yinc) + '\n')
         f.close()
-        
+
     def regrid(self):
-        self.write_cdo_gridfile()        
+        self.write_cdo_gridfile()
         # attempt to create output directory
         if not os.path.isdir(self.config.regrid_directory):
-            os.mkdir(self.config.regrid_directory)            
+            os.mkdir(self.config.regrid_directory)
         for year in self.config.years:
             for month in self.config.months:
                 # filename of netCDF containing all variables
-                fn = os.path.join(
+                infile = os.path.join(
                     self.config.download_directory,
-                    'era5_reanalysis_' \
-                    + self.config.region_name + '_' \
+                    'era5_reanalysis_'
+                    + self.config.region_name + '_'
                     + year + month + '.nc'
                 )
                 # loop through the variables, select, regrid
-                for variable in self.config.variables:
-                    tmpfn = tempfile.NamedTemporaryFile(suffix='.nc')
-                    newfn = os.path.join(
+                for variable in self.config.regrid_variables:
+                    tmpfile = tempfile.NamedTemporaryFile(suffix='.nc')
+                    outfile = os.path.join(
                         self.config.regrid_directory,
-                        'era5_reanalysis_' \
-                        + variable + '_' \
-                        + self.config.region_name + '_' \
+                        'era5_reanalysis_'
+                        + variable + '_'
+                        + self.config.region_name + '_'
                         + year + month + '.nc'
                     )
-                    
-                    if not os.path.isfile(newfn):
+
+                    if not os.path.isfile(outfile):
                         try:
                             subprocess.run([
                                 'cdo',
                                 'select,name=' + VARNAMES[variable],
-                                fn,
-                                tmpfn.name
+                                infile,
+                                tmpfile.name
                             ])
                         except KeyboardInterrupt:
                             break
@@ -74,8 +77,16 @@ class RegridERA5(object):
                             subprocess.run([
                                 'cdo',
                                 'remapbil,' + self.gridfile,
-                                tmpfn.name,
-                                newfn
+                                tmpfile.name,
+                                outfile
                             ])
                         except KeyboardInterrupt:
                             break
+
+def main():
+    config = Config(os.path.abspath(sys.argv[1]))
+    regridder = RegridERA5(config)
+    regridder.regrid()
+
+if __name__ == '__main__':
+    main()

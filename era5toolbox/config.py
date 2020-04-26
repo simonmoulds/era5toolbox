@@ -27,6 +27,9 @@ VARIABLES = [
     'total_cloud_cover'
 ]
 
+CDO_SUMMARY_METHODS = ['daymean', 'daymax', 'daymin']
+
+
 class Config(object):
     def __init__(self, config_filename):
         config_filename = os.path.abspath(config_filename)
@@ -37,7 +40,8 @@ class Config(object):
         config.optionxform = str
         config.read(os.path.abspath(sys.argv[1]))
 
-        self.download_directory = config.get('FILE_PATHS', 'download_directory')
+        self.download_directory = config.get(
+            'FILE_PATHS', 'download_directory')
         self.regrid_directory = config.get('FILE_PATHS', 'regrid_directory')
         self.summary_directory = config.get('FILE_PATHS', 'summary_directory')
 
@@ -52,26 +56,49 @@ class Config(object):
         self.months = [
             str(num).zfill(2) for num in range(1, 13)
         ]
-        
+
         self.download = bool(int(config.get('TASKS', 'download')))
         self.regrid = bool(int(config.get('TASKS', 'regrid')))
         self.summarise = bool(int(config.get('TASKS', 'aggregate')))
-        self.specifichumidity = bool(int(config.get('TASKS', 'specifichumidity')))
+        self.specifichumidity = bool(
+            int(config.get('TASKS', 'specifichumidity')))
 
         self.region_name = config.get('AREA', 'name')
         self.area = [
             float(config.get('AREA', 'north')),
             float(config.get('AREA', 'west')),
             float(config.get('AREA', 'south')),
-            float(config.get('AREA', 'east')),        
+            float(config.get('AREA', 'east')),
         ]
         self.resolution = 0.25
 
-        variables = []
+        download_variables = []
         for variable in VARIABLES:
-            if variable in config.options('VARIABLES'):
-                include = bool(int(config.get('VARIABLES', variable)))
+            if variable in config.options('DOWNLOAD'):
+                include = bool(int(config.get('DOWNLOAD', variable)))
                 if include:
-                    variables.append(variable)
-        self.variables = variables
-        
+                    download_variables.append(variable)
+        self.download_variables = download_variables
+
+        regrid_variables = []
+        for variable in VARIABLES:
+            if variable in config.options('REGRID'):
+                include = bool(int(config.get('REGRID', variable)))
+                if include:
+                    regrid_variables.append(variable)
+        self.regrid_variables = download_variables
+
+        summary_variables = []
+        summary_methods = {}
+        for variable in VARIABLES:
+            if variable in config.options('SUMMARY'):
+                method_str = str(config.get('SUMMARY', variable))
+                method = [str(val.strip()) for val in method_str.split(',')]
+                if all([m in CDO_SUMMARY_METHODS for m in method]):
+                    summary_variables.append(variable)
+                    summary_methods[variable] = method
+                else:
+                    summary_methods[variable] = None
+
+        self.summary_variables = summary_variables
+        self.summary_methods = summary_methods
