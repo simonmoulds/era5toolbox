@@ -13,26 +13,26 @@ class SpecificHumidityERA5(object):
     def compute_specific_humidity(self):
         for year in self.config.years:
             for month in self.config.months:
-                
+
                 # Construct filenames of dewpoint temperature and surface pressure
                 d2mfn = os.path.join(
                     self.config.regrid_directory,
-                    'era5_reanalysis_2m_dewpoint_temperature_' \
-                    + self.config.region_name + '_' \
+                    'era5_reanalysis_2m_dewpoint_temperature_'
+                    + self.config.region_name + '_'
                     + year + month + '.nc'
                 )
                 spfn = os.path.join(
                     self.config.regrid_directory,
-                    'era5_reanalysis_surface_pressure_' \
-                    + self.config.region_name + '_' \
+                    'era5_reanalysis_surface_pressure_'
+                    + self.config.region_name + '_'
                     + year + month + '.nc'
                 )
-                
+
                 # Construct filename of output netCDF
                 qfn = os.path.join(
                     self.config.regrid_directory,
-                    'era5_reanalysis_specific_humidity_' \
-                    + self.config.region_name + '_' \
+                    'era5_reanalysis_specific_humidity_'
+                    + self.config.region_name + '_'
                     + year + month + '.nc'
                 )
 
@@ -48,10 +48,10 @@ class SpecificHumidityERA5(object):
                     coords=d2m.d2m.coords,
                     dims=d2m.d2m.dims,
                     name='q',
-                    attrs={'units' : '1'}
+                    attrs={'units': 'kg/kg'}
                 )
                 qxr.to_netcdf(qfn)
-                
+
                 # Clean up
                 sp.close()
                 d2m.close()
