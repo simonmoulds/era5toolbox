@@ -72,33 +72,41 @@ class Config(object):
         ]
         self.resolution = 0.25
 
-        download_variables = []
-        for variable in VARIABLES:
-            if variable in config.options('DOWNLOAD'):
-                include = bool(int(config.get('DOWNLOAD', variable)))
-                if include:
-                    download_variables.append(variable)
-        self.download_variables = download_variables
+        self.download_variables = None
+        if self.download:
+            download_variables = []
+            for variable in VARIABLES:
+                if variable in config.options('DOWNLOAD'):
+                    include = bool(int(config.get('DOWNLOAD', variable)))
+                    if include:
+                        download_variables.append(variable)
+            self.download_variables = download_variables
 
-        regrid_variables = []
-        for variable in VARIABLES:
-            if variable in config.options('REGRID'):
-                include = bool(int(config.get('REGRID', variable)))
-                if include:
-                    regrid_variables.append(variable)
-        self.regrid_variables = download_variables
+        self.regrid_variables = None
+        if self.regrid:
+            regrid_variables = []
+            for variable in VARIABLES:
+                if variable in config.options('REGRID'):
+                    include = bool(int(config.get('REGRID', variable)))
+                    if include:
+                        regrid_variables.append(variable)
+            self.regrid_variables = download_variables
 
-        summary_variables = []
-        summary_methods = {}
-        for variable in VARIABLES:
-            if variable in config.options('SUMMARY'):
-                method_str = str(config.get('SUMMARY', variable))
-                method = [str(val.strip()) for val in method_str.split(',')]
-                if all([m in CDO_SUMMARY_METHODS for m in method]):
-                    summary_variables.append(variable)
-                    summary_methods[variable] = method
-                else:
-                    summary_methods[variable] = None
+        self.summary_variables = None
+        self.summary_methods = None
+        if self.summarise:
+            summary_variables = []
+            summary_methods = {}
+            for variable in VARIABLES:
+                if variable in config.options('SUMMARY'):
+                    method_str = str(config.get('SUMMARY', variable))
+                    method = [str(val.strip())
+                              for val in method_str.split(',')]
+                    if all([m in CDO_SUMMARY_METHODS for m in method]):
+                        summary_variables.append(variable)
+                        summary_methods[variable] = method
+                    else:
+                        summary_methods[variable] = None
 
-        self.summary_variables = summary_variables
-        self.summary_methods = summary_methods
+            self.summary_variables = summary_variables
+            self.summary_methods = summary_methods

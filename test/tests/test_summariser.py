@@ -64,3 +64,9 @@ for year in years:
     # remove the year_month coordinate from each dataset    
     datasets = [d.drop('year_month') for d in datasets]
     xarray.save_mfdataset(datasets, outfiles)
+
+import glob
+infiles = glob.glob(os.path.join('test', 'data', 'original') + '/*.nc')
+ds = xarray.open_mfdataset(infiles, combine='by_coords')
+da = ds.tp
+vals = da.sel(latitude=40, longitude=60).values
