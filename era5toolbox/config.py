@@ -15,6 +15,10 @@ VARIABLES = [
     'large_scale_snowfall',
     'total_precipitation',
     'snowfall',
+    'convective_rain_rate',
+    'convective_snowfall_rate_water_equivalent',
+    'large_scale_rain_rate',
+    'large_scale_snowfall_rate_water_equivalent',
     'mean_sea_level_pressure',
     'surface_pressure',
     'mean_surface_downward_long_wave_radiation_flux',
@@ -44,6 +48,10 @@ class Config(object):
             'FILE_PATHS', 'download_directory')
         self.regrid_directory = config.get('FILE_PATHS', 'regrid_directory')
         self.summary_directory = config.get('FILE_PATHS', 'summary_directory')
+        try:
+            self.file_prefix = config.get('FILE_PATHS', 'file_prefix')
+        except:
+            self.file_prefix = ''
 
         self.start_year = config.get('TIME', 'start')
         self.end_year = config.get('TIME', 'end')

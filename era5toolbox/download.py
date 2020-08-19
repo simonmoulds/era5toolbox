@@ -41,6 +41,7 @@ class DownloadERA5(object):
                     self.config.download_directory,
                     'era5_reanalysis_' \
                     + self.config.region_name + '_' \
+                    + self.config.file_prefix + '_'
                     + year + month + '.nc'
                 )
                 # only download if the file doesn't already exist
