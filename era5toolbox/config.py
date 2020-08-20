@@ -89,7 +89,8 @@ class Config(object):
                     if include:
                         download_variables.append(variable)
             self.download_variables = download_variables
-
+        print(self.download_variables)
+        
         self.regrid_variables = None
         if self.regrid:
             regrid_variables = []
@@ -99,7 +100,8 @@ class Config(object):
                     if include:
                         regrid_variables.append(variable)
             self.regrid_variables = download_variables
-
+        print(self.regrid_variables)
+        
         self.summary_variables = None
         self.summary_methods = None
         if self.summarise:

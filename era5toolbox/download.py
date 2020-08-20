@@ -40,8 +40,8 @@ class DownloadERA5(object):
                 fn = os.path.join(
                     self.config.download_directory,
                     'era5_reanalysis_' \
-                    + self.config.region_name + '_' \
-                    + self.config.file_prefix + '_'
+                    + str(self.config.region_name) + '_' \
+                    + str(self.config.file_prefix) + '_' \
                     + year + month + '.nc'
                 )
                 # only download if the file doesn't already exist
@@ -54,7 +54,7 @@ class DownloadERA5(object):
                                 'product_type' : 'reanalysis',
                                 'format' : 'netcdf',
                                 'area' : self.config.area,
-                                'variable' : self.config.variables,
+                                'variable' : self.config.download_variables,
                                 'year' : year,
                                 'month' : month,
                                 'day' : DAYS,
@@ -63,7 +63,8 @@ class DownloadERA5(object):
                             fn
                         )
                     except:
-                        pass
+                        print("Hello, world")
+                        # pass
 
 def main():
     config = Config(os.path.abspath(sys.argv[1]))
