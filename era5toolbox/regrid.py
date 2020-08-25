@@ -45,21 +45,26 @@ class RegridERA5(object):
             os.mkdir(self.config.regrid_directory)
         for year in self.config.years:
             for month in self.config.months:
+                
                 # filename of netCDF containing all variables
                 infile = os.path.join(
                     self.config.download_directory,
                     'era5_reanalysis_'
-                    + self.config.region_name + '_'
+                    + self.config.region_name + '_' \
+                    + str(self.config.file_prefix) \
                     + year + month + '.nc'
                 )
+                
                 # loop through the variables, select, regrid
                 for variable in self.config.regrid_variables:
-                    tmpfile = tempfile.NamedTemporaryFile(suffix='.nc')
+                    tmpfile1 = tempfile.NamedTemporaryFile(suffix='.nc')
+                    tmpfile2 = tempfile.NamedTemporaryFile(suffix='.nc')
                     outfile = os.path.join(
                         self.config.regrid_directory,
                         'era5_reanalysis_'
                         + variable + '_'
                         + self.config.region_name + '_'
+                        + str(self.config.file_prefix) \
                         + year + month + '.nc'
                     )
 
@@ -69,15 +74,23 @@ class RegridERA5(object):
                                 'cdo',
                                 'select,name=' + VARNAMES[variable],
                                 infile,
-                                tmpfile.name
+                                tmpfile1.name
                             ])
                         except KeyboardInterrupt:
                             break
                         try:
+                            # use bilinear interpolation for all continuous variables
                             subprocess.run([
                                 'cdo',
                                 'remapbil,' + self.gridfile,
-                                tmpfile.name,
+                                tmpfile1.name,
+                                tmpfile2.name
+                            ])
+                            # ensure that variables have datatype 'double', not 'short', which seems to cause problems in JULES (not exactly sure why...)
+                            subprocess.run([
+                                'cdo',
+                                '-b F64 copy',
+                                tmpfile2.name,
                                 outfile
                             ])
                         except KeyboardInterrupt:

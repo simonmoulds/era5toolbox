@@ -41,7 +41,7 @@ VARNAMES = {
     'convective_rain_rate' : 'crr',
     'convective_snowfall_rate_water_equivalent' : 'csfr',
     'large_scale_rain_rate' : 'lsrr',
-    'large_scale_snowfall_rate_water_equivalent' : 'lsfrr',
+    'large_scale_snowfall_rate_water_equivalent' : 'lssfr',
     'mean_sea_level_pressure' : 'msl',
     'surface_pressure' : 'sp',
     'mean_surface_downward_long_wave_radiation_flux' : 'msdwlwrf',

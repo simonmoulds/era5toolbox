@@ -52,6 +52,10 @@ class Config(object):
             self.file_prefix = config.get('FILE_PATHS', 'file_prefix')
         except:
             self.file_prefix = ''
+            
+        # add trailing underscore
+        if len(self.file_prefix) > 0:
+            self.file_prefix = self.file_prefix + '_'
 
         self.start_year = config.get('TIME', 'start')
         self.end_year = config.get('TIME', 'end')
@@ -89,7 +93,6 @@ class Config(object):
                     if include:
                         download_variables.append(variable)
             self.download_variables = download_variables
-        print(self.download_variables)
         
         self.regrid_variables = None
         if self.regrid:
@@ -99,8 +102,7 @@ class Config(object):
                     include = bool(int(config.get('REGRID', variable)))
                     if include:
                         regrid_variables.append(variable)
-            self.regrid_variables = download_variables
-        print(self.regrid_variables)
+            self.regrid_variables = regrid_variables
         
         self.summary_variables = None
         self.summary_methods = None
